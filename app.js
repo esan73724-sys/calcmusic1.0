@@ -124,6 +124,7 @@ function recalculate() {
     
     if (hpp <= 0) {
         document.getElementById('resultCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'none';
         return;
     }
     
@@ -131,8 +132,15 @@ function recalculate() {
     
     if (!result) {
         document.getElementById('resultCard').style.display = 'none';
+        const maxMargin = ((1 - tp / 100) * 100).toFixed(1).replace('.', ',');
+        document.getElementById('errorTitle').textContent = 'Margin terlalu besar';
+        document.getElementById('errorText').textContent = 
+            `Total potongan Shopee (${tp.toFixed(2).replace('.', ',')}%) + margin ${margin}% = ${(tp + margin).toFixed(1).replace('.', ',')}% — melebihi 100%. Margin maksimal: ${maxMargin}%.`;
+        document.getElementById('errorCard').style.display = 'block';
         return;
     }
+    
+    document.getElementById('errorCard').style.display = 'none';
     
     // Show results
     const card = document.getElementById('resultCard');

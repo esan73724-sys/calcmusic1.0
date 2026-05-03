@@ -667,6 +667,30 @@ body {
     text-decoration: underline;
 }
 
+/* ===== ERROR CARD ===== */
+.error-card {
+    border-color: #fca5a5;
+    background: #fef2f2;
+}
+
+.error-message {
+    text-align: center;
+    padding: 16px;
+}
+
+.error-message strong {
+    display: block;
+    font-size: 1rem;
+    color: #dc2626;
+    margin-bottom: 6px;
+}
+
+.error-message p {
+    font-size: 0.85rem;
+    color: #7f1d1d;
+    line-height: 1.5;
+}
+
 /* ===== FOOTER ===== */
 .footer {
     text-align: center;
