@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator Harga Jual Shopee — Alat Musik</title>
-    <meta name="description" content="Hitung harga jual aman di Shopee untuk kategori Alat Musik & Drumband. Cari harga jual, net profit, dan dana diterima.">
+    <meta name="description"
+        content="Hitung harga jual aman di Shopee untuk kategori Alat Musik & Drumband. Cari harga jual, net profit, dan dana diterima.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app">
         <header class="header">
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                            <line x1="4" y1="22" x2="4" y2="15" />
+                        </svg>
                     </div>
                     <div>
                         <h1>Kalkulator Shopee — Alat Musik</h1>
@@ -41,7 +49,8 @@
                     <h2 id="cardTitle">Cari Harga Jual Aman</h2>
                 </div>
                 <div class="card-body">
-                    <p class="card-desc" id="cardDesc">Masukkan HPP dan target profit yang diinginkan. Kalkulator akan menghitung harga jual yang diperlukan.</p>
+                    <p class="card-desc" id="cardDesc">Masukkan HPP dan target profit yang diinginkan. Kalkulator akan
+                        menghitung harga jual yang diperlukan.</p>
 
                     <!-- Mode: Cari Harga Jual -->
                     <div class="input-row" id="inputsHarga">
@@ -49,14 +58,16 @@
                             <label>HPP / Modal (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="hppForHarga" class="input-main" placeholder="16.000" oninput="formatAndRecalculate(this)">
+                                <input type="text" id="hppForHarga" class="input-main" placeholder="16.000"
+                                    oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                         <div class="input-group">
                             <label>Target Net Profit (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="profitTarget" class="input-main" placeholder="16.000" oninput="formatAndRecalculate(this)">
+                                <input type="text" id="profitTarget" class="input-main" placeholder="16.000"
+                                    oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                     </div>
@@ -67,25 +78,36 @@
                             <label>Harga Jual (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="hargaForProfit" class="input-main" placeholder="500.000" oninput="formatAndRecalculate(this)">
+                                <input type="text" id="hargaForProfit" class="input-main" placeholder="500.000"
+                                    oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                         <div class="input-group">
                             <label>HPP / Modal (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="hppForProfit" class="input-main" placeholder="350.000" oninput="formatAndRecalculate(this)">
+                                <input type="text" id="hppForProfit" class="input-main" placeholder="350.000"
+                                    oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                     </div>
 
                     <!-- Mode: Dana Diterima -->
                     <div class="input-row hidden" id="inputsTerima">
-                        <div class="input-group full-width">
-                            <label>Harga Jual (Rp)</label>
+                        <div class="input-group">
+                            <label>HPP / Modal (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="hargaForTerima" class="input-main" placeholder="500.000" oninput="formatAndRecalculate(this)">
+                                <input type="text" id="hppForTerima" class="input-main" placeholder="350.000"
+                                    oninput="formatAndRecalculate(this)">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Target Dana Diterima (Rp)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="targetDiterima" class="input-main" placeholder="400.000"
+                                    oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                     </div>
@@ -94,7 +116,8 @@
                     <div class="tier-row">
                         <label>Tipe Toko:</label>
                         <div class="tier-selector">
-                            <button class="tier-btn active" data-tier="non-star" onclick="setTier('non-star')">Non-Star / Star / Star+</button>
+                            <button class="tier-btn active" data-tier="non-star" onclick="setTier('non-star')">Non-Star
+                                / Star / Star+</button>
                             <button class="tier-btn" data-tier="mall" onclick="setTier('mall')">Shopee Mall</button>
                         </div>
                     </div>
@@ -193,28 +216,34 @@
                         <div class="settings-grid">
                             <div class="setting-item">
                                 <label>Biaya Admin (%)</label>
-                                <input type="text" id="biayaAdmin" value="9,50" class="input-field" oninput="recalculate()">
+                                <input type="text" id="biayaAdmin" value="9,50" class="input-field"
+                                    oninput="recalculate()">
                                 <span class="setting-note">Alat Musik</span>
                             </div>
                             <div class="setting-item">
                                 <label>Biaya Layanan (%)</label>
-                                <input type="text" id="biayaLayanan" value="4,50" class="input-field" oninput="recalculate()">
+                                <input type="text" id="biayaLayanan" value="4,50" class="input-field"
+                                    oninput="recalculate()">
                             </div>
                             <div class="setting-item">
                                 <label>Biaya AMS / XTRA (%)</label>
-                                <input type="text" id="biayaAMS" value="1,75" class="input-field" oninput="recalculate()">
+                                <input type="text" id="biayaAMS" value="1,75" class="input-field"
+                                    oninput="recalculate()">
                             </div>
                             <div class="setting-item">
                                 <label>Gratis Ongkir XTRA (%)</label>
-                                <input type="text" id="biayaGOX" value="6,00" class="input-field" oninput="recalculate()">
+                                <input type="text" id="biayaGOX" value="6,00" class="input-field"
+                                    oninput="recalculate()">
                             </div>
                             <div class="setting-item">
                                 <label>Biaya Proses (Rp)</label>
-                                <input type="text" id="biayaProses" value="1.250" class="input-field" oninput="recalculate()">
+                                <input type="text" id="biayaProses" value="1.250" class="input-field"
+                                    oninput="recalculate()">
                             </div>
                         </div>
                         <div class="total-fee-bar">
-                            Total potongan: <strong id="totalFeePercent">21,75%</strong> + Rp <strong id="totalFeeFlat">1.250</strong> per transaksi
+                            Total potongan: <strong id="totalFeePercent">21,75%</strong> + Rp <strong
+                                id="totalFeeFlat">1.250</strong> per transaksi
                         </div>
                     </div>
                 </details>
@@ -228,18 +257,53 @@
                     </summary>
                     <div class="card-body">
                         <table class="ref-table">
-                            <thead><tr><th>Sub-Kategori</th><th>Non-Star/Star+</th><th>Mall</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th>Sub-Kategori</th>
+                                    <th>Non-Star/Star+</th>
+                                    <th>Mall</th>
+                                </tr>
+                            </thead>
                             <tbody>
-                                <tr class="highlight-row"><td><strong>Alat & Aksesoris Musik</strong></td><td><strong>9,50%</strong></td><td><strong>7,70%</strong></td></tr>
-                                <tr><td>Album Foto</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>CD, DVD & Bluray</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>Koleksi</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>Mainan & Games</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>Souvenir & Hadiah</td><td>9,00%</td><td>10,45%</td></tr>
-                                <tr><td>Hobi & Koleksi Lainnya</td><td>9,50%</td><td>7,70%</td></tr>
+                                <tr class="highlight-row">
+                                    <td><strong>Alat & Aksesoris Musik</strong></td>
+                                    <td><strong>9,50%</strong></td>
+                                    <td><strong>7,70%</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Album Foto</td>
+                                    <td>9,50%</td>
+                                    <td>7,70%</td>
+                                </tr>
+                                <tr>
+                                    <td>CD, DVD & Bluray</td>
+                                    <td>9,50%</td>
+                                    <td>7,70%</td>
+                                </tr>
+                                <tr>
+                                    <td>Koleksi</td>
+                                    <td>9,50%</td>
+                                    <td>7,70%</td>
+                                </tr>
+                                <tr>
+                                    <td>Mainan & Games</td>
+                                    <td>9,50%</td>
+                                    <td>7,70%</td>
+                                </tr>
+                                <tr>
+                                    <td>Souvenir & Hadiah</td>
+                                    <td>9,00%</td>
+                                    <td>10,45%</td>
+                                </tr>
+                                <tr>
+                                    <td>Hobi & Koleksi Lainnya</td>
+                                    <td>9,50%</td>
+                                    <td>7,70%</td>
+                                </tr>
                             </tbody>
                         </table>
-                        <p class="ref-note">Sumber: <a href="https://seller.shopee.co.id/edu/article/15965" target="_blank" rel="noopener">Pusat Edukasi Penjual Shopee</a> — Mei 2026</p>
+                        <p class="ref-note">Sumber: <a href="https://seller.shopee.co.id/edu/article/15965"
+                                target="_blank" rel="noopener">Pusat Edukasi Penjual Shopee</a> — Mei 2026</p>
                     </div>
                 </details>
             </section>
@@ -247,9 +311,11 @@
 
         <footer class="footer">
             <p>Kalkulator Shopee — Alat Musik & Drumband</p>
-            <p class="footer-small">Data per Mei 2026 · <a href="https://seller.shopee.co.id/edu/article/15965" target="_blank" rel="noopener">Sumber</a></p>
+            <p class="footer-small">Data per Mei 2026 · <a href="https://seller.shopee.co.id/edu/article/15965"
+                    target="_blank" rel="noopener">Sumber</a></p>
         </footer>
     </div>
     <script src="app.js"></script>
 </body>
+
 </html>
