@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator Harga Jual Shopee — Alat Musik</title>
-    <meta name="description" content="Hitung harga jual aman di Shopee untuk kategori Alat Musik & Drumband. Masukkan HPP dan target margin, langsung dapat harga jual.">
+    <meta name="description" content="Hitung harga jual aman di Shopee untuk kategori Alat Musik & Drumband. Cari harga jual, net profit, dan dana diterima.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,48 +12,80 @@
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="16"/>
-                            <line x1="8" y1="12" x2="16" y2="12"/>
-                        </svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
                     </div>
                     <div>
-                        <h1>Kalkulator Harga Jual Shopee</h1>
-                        <p class="subtitle">Kategori: Hobi & Koleksi > Alat & Aksesoris Musik</p>
+                        <h1>Kalkulator Shopee — Alat Musik</h1>
+                        <p class="subtitle">Hobi & Koleksi > Alat & Aksesoris Musik</p>
                     </div>
                 </div>
-                <span class="badge">Update Mei 2026</span>
+                <span class="badge">Mei 2026</span>
             </div>
         </header>
 
         <main class="main">
-            <!-- Input Section -->
+            <!-- Mode Selector -->
+            <div class="mode-bar">
+                <button class="mode-btn active" data-mode="harga" onclick="setMode('harga')">Cari Harga Jual</button>
+                <button class="mode-btn" data-mode="profit" onclick="setMode('profit')">Cari Net Profit</button>
+                <button class="mode-btn" data-mode="terima" onclick="setMode('terima')">Dana Diterima</button>
+            </div>
+
+            <!-- Input Card -->
             <section class="card" id="inputCard">
                 <div class="card-header">
-                    <h2>Hitung Harga Jual Aman</h2>
+                    <h2 id="cardTitle">Cari Harga Jual Aman</h2>
                 </div>
                 <div class="card-body">
-                    <p class="card-desc">Masukkan HPP (modal) dan target margin keuntungan. Kalkulator akan menghitung harga jual minimum agar tidak rugi.</p>
+                    <p class="card-desc" id="cardDesc">Masukkan HPP dan target profit yang diinginkan. Kalkulator akan menghitung harga jual yang diperlukan.</p>
 
-                    <div class="input-row">
+                    <!-- Mode: Cari Harga Jual -->
+                    <div class="input-row" id="inputsHarga">
                         <div class="input-group">
-                            <label for="inputHPP">HPP / Modal per Unit</label>
+                            <label>HPP / Modal (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="inputHPP" class="input-main" placeholder="350.000" oninput="formatAndRecalculate(this)" autofocus>
+                                <input type="text" id="hppForHarga" class="input-main" placeholder="16.000" oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
-                        <div class="input-group input-margin">
-                            <label for="inputMargin">Target Net Profit Margin</label>
+                        <div class="input-group">
+                            <label>Target Net Profit (Rp)</label>
                             <div class="input-wrapper">
-                                <input type="text" id="inputMargin" class="input-main input-pct" value="16" oninput="recalculate()">
-                                <span class="input-suffix">%</span>
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="profitTarget" class="input-main" placeholder="16.000" oninput="formatAndRecalculate(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode: Cari Net Profit -->
+                    <div class="input-row hidden" id="inputsProfit">
+                        <div class="input-group">
+                            <label>Harga Jual (Rp)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="hargaForProfit" class="input-main" placeholder="500.000" oninput="formatAndRecalculate(this)">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>HPP / Modal (Rp)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="hppForProfit" class="input-main" placeholder="350.000" oninput="formatAndRecalculate(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode: Dana Diterima -->
+                    <div class="input-row hidden" id="inputsTerima">
+                        <div class="input-group full-width">
+                            <label>Harga Jual (Rp)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="hargaForTerima" class="input-main" placeholder="500.000" oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
                     </div>
@@ -69,46 +101,36 @@
                 </div>
             </section>
 
-            <!-- Error Message -->
-            <section class="card error-card" id="errorCard" style="display:none;">
-                <div class="card-body">
-                    <div class="error-message">
-                        <strong id="errorTitle">Margin terlalu besar</strong>
-                        <p id="errorText">Total potongan Shopee (21,75%) + margin yang diminta melebihi 100%. Margin maksimal yang bisa dicapai adalah 78,25%.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Result Section -->
+            <!-- Result Card -->
             <section class="card result-card" id="resultCard" style="display:none;">
                 <div class="card-header result-header">
-                    <h2>Harga Jual Aman</h2>
+                    <h2 id="resultTitle">Hasil Perhitungan</h2>
                 </div>
                 <div class="card-body">
                     <!-- Big Result -->
-                    <div class="big-result">
-                        <span class="big-label">Harga Jual Minimum</span>
-                        <span class="big-value" id="resHargaJual">Rp 0</span>
-                        <span class="big-note" id="resNote">Dengan margin 16% setelah semua potongan Shopee</span>
+                    <div class="big-result" id="bigResult">
+                        <span class="big-label" id="bigLabel">Harga Jual Minimum</span>
+                        <span class="big-value" id="bigValue">Rp 0</span>
+                        <span class="big-note" id="bigNote"></span>
                     </div>
 
                     <!-- Summary Grid -->
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <span class="summary-label">HPP (Modal)</span>
-                            <span class="summary-value" id="resHPP">Rp 0</span>
+                    <div class="summary-grid" id="summaryGrid">
+                        <div class="summary-item" id="sumItem1">
+                            <span class="summary-label" id="sumLabel1">HPP</span>
+                            <span class="summary-value" id="sumValue1">Rp 0</span>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Total Potongan Shopee</span>
-                            <span class="summary-value deduction" id="resTotalPotong">- Rp 0</span>
+                        <div class="summary-item" id="sumItem2">
+                            <span class="summary-label" id="sumLabel2">Total Potongan</span>
+                            <span class="summary-value deduction" id="sumValue2">-Rp 0</span>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Yang Diterima</span>
-                            <span class="summary-value" id="resDiterima">Rp 0</span>
+                        <div class="summary-item" id="sumItem3">
+                            <span class="summary-label" id="sumLabel3">Yang Diterima</span>
+                            <span class="summary-value" id="sumValue3">Rp 0</span>
                         </div>
-                        <div class="summary-item highlight-item">
-                            <span class="summary-label">Net Profit</span>
-                            <span class="summary-value profit" id="resProfit">Rp 0</span>
+                        <div class="summary-item highlight-item" id="sumItem4">
+                            <span class="summary-label" id="sumLabel4">Net Profit</span>
+                            <span class="summary-value profit" id="sumValue4">Rp 0</span>
                         </div>
                     </div>
 
@@ -144,35 +166,35 @@
                     </details>
 
                     <!-- Visual Bar -->
-                    <div class="visual-section">
+                    <div class="visual-section" id="visualSection">
                         <div class="visual-label">Komposisi Harga Jual</div>
-                        <div class="visual-bar" id="visualBar">
+                        <div class="visual-bar">
                             <div class="bar-seg seg-hpp" id="barHPP"></div>
                             <div class="bar-seg seg-fee" id="barFee"></div>
                             <div class="bar-seg seg-profit" id="barProfit"></div>
                         </div>
                         <div class="visual-legend">
                             <span><span class="dot dot-hpp"></span> HPP</span>
-                            <span><span class="dot dot-fee"></span> Potongan Shopee</span>
+                            <span><span class="dot dot-fee"></span> Potongan</span>
                             <span><span class="dot dot-profit"></span> Profit</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Fee Settings (collapsible) -->
+            <!-- Fee Settings -->
             <section class="card">
-                <details class="settings-details" id="settingsDetails">
+                <details class="settings-details">
                     <summary class="card-header clickable">
                         <h2>Pengaturan Biaya</h2>
-                        <span class="settings-hint">Sesuaikan jika berbeda dengan Seller Centre Anda</span>
+                        <span class="settings-hint">Sesuaikan dengan Seller Centre</span>
                     </summary>
                     <div class="card-body">
                         <div class="settings-grid">
                             <div class="setting-item">
                                 <label>Biaya Admin (%)</label>
                                 <input type="text" id="biayaAdmin" value="9,50" class="input-field" oninput="recalculate()">
-                                <span class="setting-note">Alat Musik — Non-Star/Star+</span>
+                                <span class="setting-note">Alat Musik</span>
                             </div>
                             <div class="setting-item">
                                 <label>Biaya Layanan (%)</label>
@@ -198,52 +220,36 @@
                 </details>
             </section>
 
-            <!-- Reference Table -->
+            <!-- Reference -->
             <section class="card">
                 <details class="ref-details">
                     <summary class="card-header clickable">
-                        <h2>Referensi Biaya Admin — Hobi & Koleksi</h2>
+                        <h2>Referensi Biaya Admin</h2>
                     </summary>
                     <div class="card-body">
                         <table class="ref-table">
-                            <thead>
-                                <tr>
-                                    <th>Sub-Kategori</th>
-                                    <th>Non-Star/Star/Star+</th>
-                                    <th>Mall</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Sub-Kategori</th><th>Non-Star/Star+</th><th>Mall</th></tr></thead>
                             <tbody>
-                                <tr class="highlight-row">
-                                    <td><strong>Alat & Aksesoris Musik</strong></td>
-                                    <td><strong>9,50%</strong></td>
-                                    <td><strong>7,70%</strong></td>
-                                </tr>
+                                <tr class="highlight-row"><td><strong>Alat & Aksesoris Musik</strong></td><td><strong>9,50%</strong></td><td><strong>7,70%</strong></td></tr>
                                 <tr><td>Album Foto</td><td>9,50%</td><td>7,70%</td></tr>
                                 <tr><td>CD, DVD & Bluray</td><td>9,50%</td><td>7,70%</td></tr>
                                 <tr><td>Koleksi</td><td>9,50%</td><td>7,70%</td></tr>
                                 <tr><td>Mainan & Games</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>Perlengkapan Menjahit</td><td>9,50%</td><td>7,70%</td></tr>
-                                <tr><td>Piringan Hitam</td><td>9,50%</td><td>7,70%</td></tr>
                                 <tr><td>Souvenir & Hadiah</td><td>9,00%</td><td>10,45%</td></tr>
                                 <tr><td>Hobi & Koleksi Lainnya</td><td>9,50%</td><td>7,70%</td></tr>
                             </tbody>
                         </table>
-                        <p class="ref-note">
-                            Sub-kategori Alat Musik meliputi: Keyboard & Piano, Alat Musik Perkusi, Alat Musik Tiup, Ukulele, Gitar & Gitar Bass, Aksesoris Musik, Alat Musik Petik Lainnya.<br>
-                            Sumber: <a href="https://seller.shopee.co.id/edu/article/15965" target="_blank" rel="noopener">Pusat Edukasi Penjual Shopee</a> — Mei 2026
-                        </p>
+                        <p class="ref-note">Sumber: <a href="https://seller.shopee.co.id/edu/article/15965" target="_blank" rel="noopener">Pusat Edukasi Penjual Shopee</a> — Mei 2026</p>
                     </div>
                 </details>
             </section>
         </main>
 
         <footer class="footer">
-            <p>Kalkulator Harga Jual Shopee — Kategori Alat Musik & Drumband</p>
+            <p>Kalkulator Shopee — Alat Musik & Drumband</p>
             <p class="footer-small">Data per Mei 2026 · <a href="https://seller.shopee.co.id/edu/article/15965" target="_blank" rel="noopener">Sumber</a></p>
         </footer>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

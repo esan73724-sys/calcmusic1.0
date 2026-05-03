@@ -1,14 +1,14 @@
 // ============================================
-// SHOPEE MUSIC CALCULATOR — SIMPLE FLOW
-// Input HPP + Target Margin → Harga Jual Aman
+// SHOPEE MUSIC CALCULATOR — 3 MODES
+// 1. Cari Harga Jual (HPP + target profit Rp)
+// 2. Cari Net Profit (harga jual + HPP)
+// 3. Dana Diterima (harga jual only)
 // ============================================
 
-const TIER_ADMIN = {
-    'non-star': 9.50,
-    'mall': 7.70
-};
-
+let currentMode = 'harga';
 let currentTier = 'non-star';
+
+const TIER_ADMIN = { 'non-star': 9.50, 'mall': 7.70 };
 
 // --- Utilities ---
 function parseNum(str) {
@@ -40,17 +40,7 @@ function formatAndRecalculate(input) {
     recalculate();
 }
 
-// --- Tier ---
-function setTier(tier) {
-    currentTier = tier;
-    document.querySelectorAll('.tier-btn').forEach(b => b.classList.toggle('active', b.dataset.tier === tier));
-    document.getElementById('biayaAdmin').value = TIER_ADMIN[tier].toFixed(2).replace('.', ',');
-    const note = document.querySelector('.setting-note');
-    if (note) note.textContent = `Alat Musik — ${tier === 'mall' ? 'Shopee Mall' : 'Non-Star/Star+'}`;
-    recalculate();
-}
-
-// --- Get Fees ---
+// --- Fees ---
 function getFees() {
     return {
         admin: parseNum(document.getElementById('biayaAdmin').value),
@@ -65,27 +55,8 @@ function totalPct(fees) {
     return fees.admin + fees.layanan + fees.ams + fees.gox;
 }
 
-// --- Core Calculation ---
-// Given HPP and target margin%, find harga jual
-// margin = profit / hargaJual * 100
-// profit = diterima - hpp
-// diterima = hargaJual * (1 - totalPct/100) - biayaProses
-// So: margin/100 = (hargaJual * (1 - tp) - bp - hpp) / hargaJual
-// margin/100 * hargaJual = hargaJual * (1-tp) - bp - hpp
-// hargaJual * (margin/100 - 1 + tp) = -bp - hpp
-// hargaJual = (hpp + bp) / (1 - tp - margin/100)
-function calcHargaJual(hpp, marginPct, fees) {
-    const tp = totalPct(fees) / 100;
-    const mp = marginPct / 100;
-    const denominator = 1 - tp - mp;
-    
-    if (denominator <= 0) {
-        return null; // Impossible — fees + margin >= 100%
-    }
-    
-    const hargaJual = Math.ceil((hpp + fees.proses) / denominator);
-    
-    // Verify
+// --- Breakdown from harga jual ---
+function calcFromHargaJual(hargaJual, fees) {
     const biayaAdmin = hargaJual * (fees.admin / 100);
     const biayaLayanan = hargaJual * (fees.layanan / 100);
     const biayaAMS = hargaJual * (fees.ams / 100);
@@ -93,95 +64,192 @@ function calcHargaJual(hpp, marginPct, fees) {
     const biayaProses = fees.proses;
     const totalPotongan = biayaAdmin + biayaLayanan + biayaAMS + biayaGOX + biayaProses;
     const diterima = hargaJual - totalPotongan;
-    const profit = diterima - hpp;
-    
-    return {
-        hargaJual,
-        hpp,
-        biayaAdmin,
-        biayaLayanan,
-        biayaAMS,
-        biayaGOX,
-        biayaProses,
-        totalPotongan,
-        diterima,
-        profit,
-        actualMargin: (profit / hargaJual) * 100
-    };
+    return { hargaJual, biayaAdmin, biayaLayanan, biayaAMS, biayaGOX, biayaProses, totalPotongan, diterima };
 }
 
-// --- Main ---
+// --- Mode: Cari Harga Jual ---
+// User inputs HPP + target profit (Rp)
+// diterima = hargaJual * (1 - tp/100) - biayaProses
+// profit = diterima - hpp = targetProfit
+// hargaJual = (hpp + targetProfit + biayaProses) / (1 - tp/100)
+function calcHargaJual(hpp, targetProfit, fees) {
+    const tp = totalPct(fees) / 100;
+    const denom = 1 - tp;
+    if (denom <= 0) return null;
+    const hargaJual = Math.ceil((hpp + targetProfit + fees.proses) / denom);
+    const breakdown = calcFromHargaJual(hargaJual, fees);
+    const profit = breakdown.diterima - hpp;
+    return { ...breakdown, hpp, profit };
+}
+
+// --- Tier ---
+function setTier(tier) {
+    currentTier = tier;
+    document.querySelectorAll('.tier-btn').forEach(b => b.classList.toggle('active', b.dataset.tier === tier));
+    document.getElementById('biayaAdmin').value = TIER_ADMIN[tier].toFixed(2).replace('.', ',');
+    recalculate();
+}
+
+// --- Mode ---
+function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    
+    document.getElementById('inputsHarga').classList.toggle('hidden', mode !== 'harga');
+    document.getElementById('inputsProfit').classList.toggle('hidden', mode !== 'profit');
+    document.getElementById('inputsTerima').classList.toggle('hidden', mode !== 'terima');
+    
+    const title = document.getElementById('cardTitle');
+    const desc = document.getElementById('cardDesc');
+    
+    if (mode === 'harga') {
+        title.textContent = 'Cari Harga Jual Aman';
+        desc.textContent = 'Masukkan HPP dan target profit (Rp) yang diinginkan. Kalkulator akan menghitung harga jual yang diperlukan.';
+    } else if (mode === 'profit') {
+        title.textContent = 'Cari Net Profit';
+        desc.textContent = 'Masukkan harga jual dan HPP untuk menghitung berapa net profit setelah semua potongan Shopee.';
+    } else {
+        title.textContent = 'Dana yang Diterima';
+        desc.textContent = 'Masukkan harga jual untuk melihat berapa dana yang diterima setelah semua potongan Shopee.';
+    }
+    
+    document.getElementById('resultCard').style.display = 'none';
+    recalculate();
+}
+
+// --- Main Recalculate ---
 function recalculate() {
     const fees = getFees();
     const tp = totalPct(fees);
-    
-    // Update fee total display
     document.getElementById('totalFeePercent').textContent = tp.toFixed(2).replace('.', ',') + '%';
     document.getElementById('totalFeeFlat').textContent = fees.proses.toLocaleString('id-ID');
     
-    const hpp = parseNum(document.getElementById('inputHPP').value);
-    const margin = parseFloat(document.getElementById('inputMargin').value) || 0;
+    let result = null;
+    let hargaJual, hpp, profit, diterima;
     
-    if (hpp <= 0) {
-        document.getElementById('resultCard').style.display = 'none';
-        document.getElementById('errorCard').style.display = 'none';
-        return;
+    if (currentMode === 'harga') {
+        hpp = parseNum(document.getElementById('hppForHarga').value);
+        const targetProfit = parseNum(document.getElementById('profitTarget').value);
+        if (hpp <= 0 && targetProfit <= 0) { hide(); return; }
+        result = calcHargaJual(hpp, targetProfit, fees);
+        if (!result) { hide(); return; }
+        
+        hargaJual = result.hargaJual;
+        diterima = result.diterima;
+        profit = result.profit;
+        
+        // Show result
+        show();
+        document.getElementById('resultTitle').textContent = 'Harga Jual Aman';
+        document.getElementById('bigLabel').textContent = 'Harga Jual Minimum';
+        document.getElementById('bigValue').textContent = fmtRp(hargaJual);
+        document.getElementById('bigValue').className = 'big-value';
+        document.getElementById('bigNote').textContent = `Profit ${fmtRp(profit)} dari HPP ${fmtRp(hpp)}`;
+        document.getElementById('bigResult').className = 'big-result';
+        
+        setSummary('HPP', fmtRp(hpp), '', 
+                   'Total Potongan', '- ' + fmtRp(result.totalPotongan), 'deduction',
+                   'Dana Diterima', fmtRp(diterima), '',
+                   'Net Profit', fmtRp(profit), 'profit');
+        document.getElementById('sumItem4').className = 'summary-item highlight-item';
+        
+    } else if (currentMode === 'profit') {
+        hargaJual = parseNum(document.getElementById('hargaForProfit').value);
+        hpp = parseNum(document.getElementById('hppForProfit').value);
+        if (hargaJual <= 0) { hide(); return; }
+        
+        const breakdown = calcFromHargaJual(hargaJual, fees);
+        diterima = breakdown.diterima;
+        profit = diterima - hpp;
+        result = { ...breakdown, hpp, profit };
+        
+        show();
+        document.getElementById('resultTitle').textContent = 'Net Profit';
+        document.getElementById('bigLabel').textContent = 'Net Profit';
+        document.getElementById('bigValue').textContent = fmtRp(profit);
+        document.getElementById('bigValue').className = 'big-value ' + (profit > 0 ? 'positive' : profit < 0 ? 'negative' : '');
+        const pctMarkup = hpp > 0 ? ((profit / hpp) * 100).toFixed(1).replace('.', ',') : '-';
+        document.getElementById('bigNote').textContent = hpp > 0 ? `Markup ${pctMarkup}% dari HPP` : '';
+        document.getElementById('bigResult').className = 'big-result ' + (profit > 0 ? 'big-positive' : profit < 0 ? 'big-negative' : '');
+        
+        setSummary('Harga Jual', fmtRp(hargaJual), '',
+                   'Total Potongan', '- ' + fmtRp(result.totalPotongan), 'deduction',
+                   'Dana Diterima', fmtRp(diterima), '',
+                   'HPP', fmtRp(hpp), '');
+        document.getElementById('sumItem4').className = 'summary-item';
+        
+    } else { // terima
+        hargaJual = parseNum(document.getElementById('hargaForTerima').value);
+        if (hargaJual <= 0) { hide(); return; }
+        
+        const breakdown = calcFromHargaJual(hargaJual, fees);
+        diterima = breakdown.diterima;
+        result = { ...breakdown, hpp: 0, profit: 0 };
+        
+        show();
+        document.getElementById('resultTitle').textContent = 'Dana yang Diterima';
+        document.getElementById('bigLabel').textContent = 'Dana yang Diterima';
+        document.getElementById('bigValue').textContent = fmtRp(diterima);
+        document.getElementById('bigValue').className = 'big-value';
+        const pctTerima = ((diterima / hargaJual) * 100).toFixed(1).replace('.', ',');
+        document.getElementById('bigNote').textContent = `${pctTerima}% dari harga jual`;
+        document.getElementById('bigResult').className = 'big-result';
+        
+        setSummary('Harga Jual', fmtRp(hargaJual), '',
+                   'Biaya Admin', '- ' + fmtRp(breakdown.biayaAdmin), 'deduction',
+                   'Biaya Lainnya', '- ' + fmtRp(result.totalPotongan - breakdown.biayaAdmin), 'deduction',
+                   'Dana Diterima', fmtRp(diterima), 'profit');
+        document.getElementById('sumItem4').className = 'summary-item highlight-item';
     }
-    
-    const result = calcHargaJual(hpp, margin, fees);
-    
-    if (!result) {
-        document.getElementById('resultCard').style.display = 'none';
-        const maxMargin = ((1 - tp / 100) * 100).toFixed(1).replace('.', ',');
-        document.getElementById('errorTitle').textContent = 'Margin terlalu besar';
-        document.getElementById('errorText').textContent = 
-            `Total potongan Shopee (${tp.toFixed(2).replace('.', ',')}%) + margin ${margin}% = ${(tp + margin).toFixed(1).replace('.', ',')}% — melebihi 100%. Margin maksimal: ${maxMargin}%.`;
-        document.getElementById('errorCard').style.display = 'block';
-        return;
-    }
-    
-    document.getElementById('errorCard').style.display = 'none';
-    
-    // Show results
-    const card = document.getElementById('resultCard');
-    card.style.display = 'block';
-    
-    document.getElementById('resHargaJual').textContent = fmtRp(result.hargaJual);
-    document.getElementById('resNote').textContent = `Dengan margin ${margin}% setelah semua potongan Shopee`;
-    document.getElementById('resHPP').textContent = fmtRp(result.hpp);
-    document.getElementById('resTotalPotong').textContent = '- ' + fmtRp(result.totalPotongan);
-    document.getElementById('resDiterima').textContent = fmtRp(result.diterima);
-    document.getElementById('resProfit').textContent = fmtRp(result.profit);
     
     // Breakdown
-    document.getElementById('brkAdminPct').textContent = `(${fees.admin.toFixed(2).replace('.', ',')}%)`;
-    document.getElementById('brkLayananPct').textContent = `(${fees.layanan.toFixed(2).replace('.', ',')}%)`;
-    document.getElementById('brkAMSPct').textContent = `(${fees.ams.toFixed(2).replace('.', ',')}%)`;
-    document.getElementById('brkGOXPct').textContent = `(${fees.gox.toFixed(2).replace('.', ',')}%)`;
-    
-    document.getElementById('brkAdmin').textContent = fmtRp(result.biayaAdmin);
-    document.getElementById('brkLayanan').textContent = fmtRp(result.biayaLayanan);
-    document.getElementById('brkAMS').textContent = fmtRp(result.biayaAMS);
-    document.getElementById('brkGOX').textContent = fmtRp(result.biayaGOX);
-    document.getElementById('brkProses').textContent = fmtRp(result.biayaProses);
-    document.getElementById('brkTotal').textContent = fmtRp(result.totalPotongan);
-    
-    // Visual bar
-    if (result.hargaJual > 0) {
-        const pHPP = (result.hpp / result.hargaJual) * 100;
-        const pFee = (result.totalPotongan / result.hargaJual) * 100;
-        const pProfit = Math.max(0, 100 - pHPP - pFee);
+    if (result) {
+        document.getElementById('brkAdminPct').textContent = `(${fees.admin.toFixed(2).replace('.', ',')}%)`;
+        document.getElementById('brkLayananPct').textContent = `(${fees.layanan.toFixed(2).replace('.', ',')}%)`;
+        document.getElementById('brkAMSPct').textContent = `(${fees.ams.toFixed(2).replace('.', ',')}%)`;
+        document.getElementById('brkGOXPct').textContent = `(${fees.gox.toFixed(2).replace('.', ',')}%)`;
+        document.getElementById('brkAdmin').textContent = fmtRp(result.biayaAdmin);
+        document.getElementById('brkLayanan').textContent = fmtRp(result.biayaLayanan);
+        document.getElementById('brkAMS').textContent = fmtRp(result.biayaAMS);
+        document.getElementById('brkGOX').textContent = fmtRp(result.biayaGOX);
+        document.getElementById('brkProses').textContent = fmtRp(result.biayaProses);
+        document.getElementById('brkTotal').textContent = fmtRp(result.totalPotongan);
         
-        document.getElementById('barHPP').style.width = pHPP + '%';
-        document.getElementById('barFee').style.width = pFee + '%';
-        document.getElementById('barProfit').style.width = pProfit + '%';
+        // Visual bar
+        const hj = result.hargaJual;
+        if (hj > 0) {
+            const h = result.hpp || 0;
+            const f = result.totalPotongan;
+            const p = Math.max(0, hj - h - f);
+            document.getElementById('barHPP').style.width = (h / hj * 100) + '%';
+            document.getElementById('barFee').style.width = (f / hj * 100) + '%';
+            document.getElementById('barProfit').style.width = (p / hj * 100) + '%';
+            document.getElementById('visualSection').style.display = h > 0 ? '' : 'none';
+        }
     }
 }
+
+function setSummary(l1, v1, c1, l2, v2, c2, l3, v3, c3, l4, v4, c4) {
+    document.getElementById('sumLabel1').textContent = l1;
+    document.getElementById('sumValue1').textContent = v1;
+    document.getElementById('sumValue1').className = 'summary-value ' + c1;
+    document.getElementById('sumLabel2').textContent = l2;
+    document.getElementById('sumValue2').textContent = v2;
+    document.getElementById('sumValue2').className = 'summary-value ' + c2;
+    document.getElementById('sumLabel3').textContent = l3;
+    document.getElementById('sumValue3').textContent = v3;
+    document.getElementById('sumValue3').className = 'summary-value ' + c3;
+    document.getElementById('sumLabel4').textContent = l4;
+    document.getElementById('sumValue4').textContent = v4;
+    document.getElementById('sumValue4').className = 'summary-value ' + c4;
+}
+
+function show() { document.getElementById('resultCard').style.display = 'block'; }
+function hide() { document.getElementById('resultCard').style.display = 'none'; }
 
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
     const fees = getFees();
-    const tp = totalPct(fees);
-    document.getElementById('totalFeePercent').textContent = tp.toFixed(2).replace('.', ',') + '%';
+    document.getElementById('totalFeePercent').textContent = totalPct(fees).toFixed(2).replace('.', ',') + '%';
     document.getElementById('totalFeeFlat').textContent = fees.proses.toLocaleString('id-ID');
 });
