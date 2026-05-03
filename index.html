@@ -52,13 +52,33 @@
                     <p class="card-desc" id="cardDesc">Masukkan HPP dan target profit yang diinginkan. Kalkulator akan
                         menghitung harga jual yang diperlukan.</p>
 
-                    <!-- Mode: Cari Harga Jual -->
+                    <!-- Mode 1: Cari Harga Jual (HPP + Margin %) -->
                     <div class="input-row" id="inputsHarga">
                         <div class="input-group">
                             <label>HPP / Modal (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="hppForHarga" class="input-main" placeholder="16.000"
+                                <input type="text" id="hppForHarga" class="input-main" placeholder="450.000"
+                                    oninput="formatAndRecalculate(this)">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Target Margin (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="marginPct" class="input-main input-pct" value="16"
+                                    min="0" step="1" oninput="recalculate()">
+                                <span class="input-suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode 2: Cari Net Profit (HPP + Target Profit Rp) -->
+                    <div class="input-row hidden" id="inputsProfit">
+                        <div class="input-group">
+                            <label>HPP / Modal (Rp)</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="hppForProfit" class="input-main" placeholder="350.000"
                                     oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
@@ -66,27 +86,7 @@
                             <label>Target Net Profit (Rp)</label>
                             <div class="input-wrapper">
                                 <span class="input-prefix">Rp</span>
-                                <input type="text" id="profitTarget" class="input-main" placeholder="16.000"
-                                    oninput="formatAndRecalculate(this)">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mode: Cari Net Profit -->
-                    <div class="input-row hidden" id="inputsProfit">
-                        <div class="input-group">
-                            <label>Harga Jual (Rp)</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">Rp</span>
-                                <input type="text" id="hargaForProfit" class="input-main" placeholder="500.000"
-                                    oninput="formatAndRecalculate(this)">
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>HPP / Modal (Rp)</label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">Rp</span>
-                                <input type="text" id="hppForProfit" class="input-main" placeholder="350.000"
+                                <input type="text" id="profitTarget" class="input-main" placeholder="100.000"
                                     oninput="formatAndRecalculate(this)">
                             </div>
                         </div>
