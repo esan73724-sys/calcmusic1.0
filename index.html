@@ -166,12 +166,8 @@
                                 <span id="brkAdmin">Rp 0</span>
                             </div>
                             <div class="breakdown-item">
-                                <span>Biaya Layanan <small id="brkLayananPct"></small></span>
-                                <span id="brkLayanan">Rp 0</span>
-                            </div>
-                            <div class="breakdown-item">
-                                <span>Biaya AMS / XTRA <small id="brkAMSPct"></small></span>
-                                <span id="brkAMS">Rp 0</span>
+                                <span>Cashback XTRA <small id="brkCashbackPct"></small></span>
+                                <span id="brkCashback">Rp 0</span>
                             </div>
                             <div class="breakdown-item">
                                 <span>Gratis Ongkir XTRA <small id="brkGOXPct"></small></span>
@@ -221,19 +217,16 @@
                                 <span class="setting-note">Alat Musik</span>
                             </div>
                             <div class="setting-item">
-                                <label>Biaya Layanan (%)</label>
-                                <input type="text" id="biayaLayanan" value="4,50" class="input-field"
+                                <label>Cashback XTRA (%)</label>
+                                <input type="text" id="biayaCashback" value="4,50" class="input-field"
                                     oninput="recalculate()">
-                            </div>
-                            <div class="setting-item">
-                                <label>Biaya AMS / XTRA (%)</label>
-                                <input type="text" id="biayaAMS" value="1,75" class="input-field"
-                                    oninput="recalculate()">
+                                <span class="setting-note">Promo XTRA</span>
                             </div>
                             <div class="setting-item">
                                 <label>Gratis Ongkir XTRA (%)</label>
-                                <input type="text" id="biayaGOX" value="6,00" class="input-field"
+                                <input type="text" id="biayaGOX" value="4,00" class="input-field"
                                     oninput="recalculate()">
+                                <span class="setting-note">Standar</span>
                             </div>
                             <div class="setting-item">
                                 <label>Biaya Proses (Rp)</label>
@@ -242,7 +235,7 @@
                             </div>
                         </div>
                         <div class="total-fee-bar">
-                            Total potongan: <strong id="totalFeePercent">21,75%</strong> + Rp <strong
+                            Total potongan: <strong id="totalFeePercent">18,00%</strong> + Rp <strong
                                 id="totalFeeFlat">1.250</strong> per transaksi
                         </div>
                     </div>

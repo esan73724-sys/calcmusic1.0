@@ -1,24 +1,28 @@
 // ============================================
 // SHOPEE MUSIC CALCULATOR — 3 MODES
 //
-// RUMUS DASAR:
-//   potongan  = hargaJual × totalPct% + biayaProses
-//   diterima  = hargaJual - potongan
-//   profit    = diterima - hpp
+// BIAYA SHOPEE (per Mei 2026, Alat Musik):
+//   1. Biaya Admin:        9,50% (Non-Star) / 7,70% (Mall)
+//   2. Cashback XTRA:      4,50% (opsional, Promo XTRA)
+//   3. Gratis Ongkir XTRA: 4,00% (standar) / 6,00% (khusus)
+//   4. Biaya Proses:       Rp 1.250 (flat per transaksi)
+//
+// RUMUS:
+//   totalPct    = admin% + cashback% + gox%
+//   potongan    = hargaJual × totalPct/100 + biayaProses
+//   diterima    = hargaJual - potongan
+//   profit      = diterima - hpp
 //
 // MODE 1 — CARI HARGA JUAL (HPP + Margin %):
-//   margin% = profit / hpp × 100
-//   profit  = hpp × margin% / 100
-//   diterima = hpp + profit = hpp × (1 + margin/100)
+//   profit   = hpp × margin / 100
+//   diterima = hpp + profit
 //   hargaJual = (diterima + biayaProses) / (1 - totalPct/100)
 //
 // MODE 2 — CARI NET PROFIT (HPP + Target Profit Rp):
-//   profit  = targetProfit
 //   diterima = hpp + targetProfit
 //   hargaJual = (diterima + biayaProses) / (1 - totalPct/100)
 //
 // MODE 3 — DANA DITERIMA (HPP + Target Diterima Rp):
-//   diterima = targetDiterima
 //   hargaJual = (targetDiterima + biayaProses) / (1 - totalPct/100)
 //   profit = targetDiterima - hpp
 // ============================================
@@ -58,25 +62,23 @@ function formatAndRecalculate(el) {
 // --- Fees ---
 function getFees() {
     return {
-        admin:   parseRp(document.getElementById('biayaAdmin').value),
-        layanan: parseRp(document.getElementById('biayaLayanan').value),
-        ams:     parseRp(document.getElementById('biayaAMS').value),
-        gox:     parseRp(document.getElementById('biayaGOX').value),
-        proses:  parseRp(document.getElementById('biayaProses').value)
+        admin:    parseRp(document.getElementById('biayaAdmin').value),
+        cashback: parseRp(document.getElementById('biayaCashback').value),
+        gox:      parseRp(document.getElementById('biayaGOX').value),
+        proses:   parseRp(document.getElementById('biayaProses').value)
     };
 }
 
-function totalPct(f) { return f.admin + f.layanan + f.ams + f.gox; }
+function totalPct(f) { return f.admin + f.cashback + f.gox; }
 
 function calcBreakdown(hargaJual, fees) {
-    const bAdmin   = hargaJual * fees.admin / 100;
-    const bLayanan = hargaJual * fees.layanan / 100;
-    const bAMS     = hargaJual * fees.ams / 100;
-    const bGOX     = hargaJual * fees.gox / 100;
-    const bProses  = fees.proses;
-    const totalPot = bAdmin + bLayanan + bAMS + bGOX + bProses;
-    const diterima = hargaJual - totalPot;
-    return { hargaJual, bAdmin, bLayanan, bAMS, bGOX, bProses, totalPot, diterima };
+    const bAdmin    = hargaJual * fees.admin / 100;
+    const bCashback = hargaJual * fees.cashback / 100;
+    const bGOX      = hargaJual * fees.gox / 100;
+    const bProses   = fees.proses;
+    const totalPot  = bAdmin + bCashback + bGOX + bProses;
+    const diterima  = hargaJual - totalPot;
+    return { hargaJual, bAdmin, bCashback, bGOX, bProses, totalPot, diterima };
 }
 
 // Dari target diterima → harga jual
@@ -138,15 +140,13 @@ function recalculate() {
         const margin = parseFloat(document.getElementById('marginPct').value) || 0;
         if (hpp <= 0) { hide(); return; }
 
-        // profit = hpp × margin / 100
         profit = hpp * margin / 100;
-        // diterima harus = hpp + profit
         diterima = hpp + profit;
         hargaJual = hargaJualDari(diterima, fees);
         if (!hargaJual) { hide(); return; }
 
         bd = calcBreakdown(hargaJual, fees);
-        profit = bd.diterima - hpp; // recalc exact dari rounding
+        profit = bd.diterima - hpp;
 
         show();
         setResult('Harga Jual Aman', 'Harga Jual Minimum', fmtRp(hargaJual),
@@ -163,7 +163,6 @@ function recalculate() {
         const targetProfit = parseRp(document.getElementById('profitTarget').value);
         if (hpp <= 0 && targetProfit <= 0) { hide(); return; }
 
-        // diterima = hpp + targetProfit
         diterima = hpp + targetProfit;
         hargaJual = hargaJualDari(diterima, fees);
         if (!hargaJual) { hide(); return; }
@@ -245,12 +244,10 @@ function setSummary(l1, v1, c1, l2, v2, c2, l3, v3, c3, l4, v4, c4, hl4) {
 function fillBreakdown(bd, fees) {
     if (!bd) return;
     document.getElementById('brkAdminPct').textContent = `(${fees.admin.toFixed(2).replace('.', ',')}%)`;
-    document.getElementById('brkLayananPct').textContent = `(${fees.layanan.toFixed(2).replace('.', ',')}%)`;
-    document.getElementById('brkAMSPct').textContent = `(${fees.ams.toFixed(2).replace('.', ',')}%)`;
+    document.getElementById('brkCashbackPct').textContent = `(${fees.cashback.toFixed(2).replace('.', ',')}%)`;
     document.getElementById('brkGOXPct').textContent = `(${fees.gox.toFixed(2).replace('.', ',')}%)`;
     document.getElementById('brkAdmin').textContent = fmtRp(bd.bAdmin);
-    document.getElementById('brkLayanan').textContent = fmtRp(bd.bLayanan);
-    document.getElementById('brkAMS').textContent = fmtRp(bd.bAMS);
+    document.getElementById('brkCashback').textContent = fmtRp(bd.bCashback);
     document.getElementById('brkGOX').textContent = fmtRp(bd.bGOX);
     document.getElementById('brkProses').textContent = fmtRp(bd.bProses);
     document.getElementById('brkTotal').textContent = fmtRp(bd.totalPot);
